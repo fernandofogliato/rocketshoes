@@ -6,11 +6,19 @@ import {
   MdAddCircleOutline,
   MdDelete,
 } from 'react-icons/md';
+import PropTypes from 'prop-types';
 
 import * as CartActions from '../../store/modules/cart/actions';
 import { formatPrice } from '../../util/format';
 
 import { Container, ProductTable, Total } from './styles';
+
+const propTypes = {
+  cart: PropTypes.isRequired,
+  total: PropTypes.isRequired,
+  removeFromCartRequest: PropTypes.isRequired,
+  updateAmountRequest: PropTypes.isRequired,
+};
 
 function Cart({ cart, total, removeFromCartRequest, updateAmountRequest }) {
   function increment(product) {
@@ -26,61 +34,52 @@ function Cart({ cart, total, removeFromCartRequest, updateAmountRequest }) {
       <ProductTable>
         <thead>
           <tr>
-            <th />
+            <th aria-label="Product image" />
             <th>PRODUTO</th>
             <th>QTD</th>
             <th>SUBTOTAL</th>
-            <th />
+            <th aria-label="Remove from cart" />
           </tr>
-
-          <tbody>
-            {cart.map(product => (
-              <tr>
-                <td>
-                  <img src={product.image} alt={product.title} />
-                </td>
-                <td>
-                  <strong>{product.title}</strong>
-                  <span>{product.priceFormatted}</span>
-                </td>
-                <td>
-                  <div>
-                    <button type="button">
-                      <MdRemoveCircleOutline
-                        size={20}
-                        color="#7159c1"
-                        onClick={() => decrement(product)}
-                      />
-                    </button>
-                    <input type="number" readOnly value={product.amount} />
-                    <button type="button">
-                      <MdAddCircleOutline
-                        size={20}
-                        color="#7159c1"
-                        onClick={() => increment(product)}
-                      />
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <strong>{product.subtotal}</strong>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => removeFromCartRequest(product.id)}
-                  >
-                    <MdDelete size={20} color="#7159c1" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
         </thead>
+        <tbody>
+          {cart.map(product => (
+            <tr>
+              <td>
+                <img src={product.image} alt={product.title} />
+              </td>
+              <td>
+                <strong>{product.title}</strong>
+                <span>{product.priceFormatted}</span>
+              </td>
+              <td>
+                <div>
+                  <button type="button" onClick={() => decrement(product)}>
+                    <MdRemoveCircleOutline size={20} color="#7159c1" />
+                  </button>
+                  <input type="number" readOnly value={product.amount} />
+                  <button type="button" onClick={() => increment(product)}>
+                    <MdAddCircleOutline size={20} color="#7159c1" />
+                  </button>
+                </div>
+              </td>
+              <td>
+                <strong>{product.subtotal}</strong>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  onClick={() => removeFromCartRequest(product.id)}
+                >
+                  <MdDelete size={20} color="#7159c1" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </ProductTable>
 
       <footer>
-        <button type="button">Finalizar pedido</button>
+        <button type="button">Proceed to checkout</button>
 
         <Total>
           <span>Total</span>
@@ -102,6 +101,8 @@ const mapStateToProps = state => ({
     }, 0)
   ),
 });
+
+Cart.propTypes = propTypes;
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(CartActions, dispatch);

@@ -4,7 +4,11 @@ import { toast } from 'react-toastify';
 import api from '../../../services/api';
 import history from '../../../services/history';
 import { formatPrice } from '../../../util/format';
-import { addToCartSuccess, updateAmountSuccess } from './actions';
+import {
+  addToCartSuccess,
+  updateAmountSuccess,
+  removeFromCartSuccess,
+} from './actions';
 
 function* addToCart({ id }) {
   const productExists = yield select(state =>
@@ -12,14 +16,14 @@ function* addToCart({ id }) {
   );
 
   const stock = yield call(api.get, `/stock/${id}`);
-
+  console.tron.log(productExists);
   const stockAmount = stock.data.amount;
   const currentAmount = productExists ? productExists.amount : 0;
 
   const amount = currentAmount + 1;
 
   if (amount > stockAmount) {
-    toast.error('Quantidade solicitada fora de estoque.');
+    toast.error('Out of stock.');
     return;
   }
 
@@ -48,14 +52,16 @@ function* updateAmount({ id, amount }) {
   const stockAmount = stock.data.amount;
 
   if (amount > stockAmount) {
-    toast.error('Quantidade solicitada fora de estoque.');
+    toast.error('Out of stock.');
     return;
   }
 
   yield put(updateAmountSuccess(id, amount));
 }
 
-function* removeFromCart() {}
+function* removeFromCart({ id }) {
+  yield put(removeFromCartSuccess(id));
+}
 
 export default all([
   takeLatest('@cart/ADD_REQUEST', addToCart),

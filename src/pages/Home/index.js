@@ -2,16 +2,26 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
+import PropTypes from 'prop-types';
+
 import { formatPrice } from '../../util/format';
 import * as CartActions from '../../store/modules/cart/actions';
 
 import api from '../../services/api';
 import { ProductList } from './styles';
 
+const propTypes = {
+  addToCartRequest: PropTypes.isRequired,
+  amount: PropTypes.isRequired,
+};
+
 class Home extends Component {
-  state = {
-    products: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      products: [],
+    };
+  }
 
   async componentDidMount() {
     const response = await api.get('products');
@@ -48,7 +58,7 @@ class Home extends Component {
                 {'  '}
                 {amount[product.id] || 0}
               </div>
-              <span>ADICIONAR AO CARRINHO</span>
+              <span>ADD TO CART</span>
             </button>
           </li>
         ))}
@@ -56,6 +66,8 @@ class Home extends Component {
     );
   }
 }
+
+Home.propTypes = propTypes;
 
 const mapStateToProps = state => ({
   amount: state.cart.reduce((amount, product) => {
